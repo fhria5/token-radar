@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#board">Skip to the board</a>
+<div class="shell">
+  <header class="top">
+    <div class="brand"><span class="mark" aria-hidden="true"></span><span class="brand-name">TOKEN RADAR</span></div>
+    <div class="top-meta"><span id="meta-date">Snapshot —</span><span>DefiLlama protocol index</span><span id="meta-model">radar-2 model</span></div>
+  </header>
+
+  <section class="lede">
+    <div>
+      <h1 id="headline">Watchlist protocols, ranked by implied value</h1>
+      <p class="lede-text">The watchlist is the floor: every protocol with at least $50M of TVL that records no token. The early radar adds pre-token protocols below that floor, by TVL. Implied value is the snapshot's own market speaking — TVL times the mcap/TVL ratio of tokenized peers in the same category — not a promise of a launch.</p>
+      <p class="lede-note">A protocol <strong>records no token</strong> when the snapshot carries no market cap, CoinGecko id or symbol for it. That is a record, not proof it has none.</p>
+    </div>
+    <dl class="facts">
+      <div class="fact"><dt>Watchlist covered</dt><dd id="fact-watchlist">—</dd></div>
+      <div class="fact"><dt>Pre-token rows scored</dt><dd id="fact-board">—</dd></div>
+      <div class="fact"><dt>Early rows below the floor</dt><dd id="fact-early">—</dd></div>
+      <div class="fact"><dt>Live-token protocols set aside</dt><dd id="fact-live">—</dd></div>
+      <div class="fact"><dt>Top implied value</dt><dd id="fact-top">—</dd></div>
+    </dl>
+  </section>
+
+  <section class="controls" aria-label="Board controls">
+    <div class="field"><label for="q">Search</label><input type="search" id="q" placeholder="Search name, category or chain" autocomplete="off"></div>
+    <div class="field"><label for="category">Category</label><select id="category"><option value="all">All categories</option></select></div>
+    <div class="field"><label for="min-tvl">Minimum TVL</label><select id="min-tvl"><option value="0">Any TVL</option><option value="50000000">$50M and up</option><option value="100000000">$100M and up</option><option value="500000000">$500M and up</option></select></div>
+    <div class="field"><span class="field-label">Token status</span><div class="tabs" role="group" aria-label="Token status"><button type="button" id="tab-pre" aria-pressed="true">Pre-token</button><button type="button" id="tab-live" aria-pressed="false">Live token</button></div></div>
+    <span class="count" id="count">— rows shown</span>
+  </section>
+
+  <main id="board" tabindex="-1" aria-busy="true">
+    <div class="panel"><div class="table-wrap"><table>
+      <caption>Pre-token protocols, strongest implied value first. Select a row for its model breakdown and farm plan.</caption>
+      <thead><tr>
+        <th scope="col"><button type="button" data-sort="rank">Rank</button></th>
+        <th scope="col"><button type="button" data-sort="name">Protocol</button></th>
+        <th scope="col"><button type="button" data-sort="tvl">TVL</button></th>
+        <th scope="col"><button type="button" data-sort="growth">7d</button></th>
+        <th scope="col"><button type="button" data-sort="age">Age</button></th>
+        <th scope="col"><button type="button" data-sort="ratio">Peer ratio</button></th>
+        <th scope="col"><button type="button" data-sort="implied">Implied value</button></th>
+        <th scope="col">Token</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div></div>
+    <div class="panel empty" id="empty" hidden>
+      <h2>No protocol matches that filter</h2>
+      <p>Clear the search or pick another category to see the board again.</p>
+      <button class="button primary" type="button" id="clear">Clear filters</button>
+    </div>
+  </main>
+
+  <section class="panel model" id="model" aria-labelledby="model-title">
+    <h2 id="model-title">How implied value is computed</h2>
+    <p class="sub">Four named functions score every row from the snapshot's own figures. No protocol name is special-cased, and no row is hand-picked.</p>
+    <p class="formula" id="formula">implied = round( tvl_usd × comparableRatio(category) × growthMultiplier(change_7d) × ageMultiplier(age_days) × chainMultiplier(chains) )</p>
+    <ul class="model-points">
+      <li><b>comparableRatio</b> — the median mcap/TVL of tokenized protocols in the same category, shrunk toward the global median when the category has few peers, clamped to 0.02–2.50.</li>
+      <li><b>growthMultiplier</b> — a damped log response to seven-day TVL growth (clamped −60% to +200%): a hot week lifts value, but one hot week can never dominate.</li>
+      <li><b>ageMultiplier</b> — pent-up value: longer listed with no token on record means more value waiting, rising from 0.75 toward 1.20 and never past it.</li>
+      <li><b>chainMultiplier</b> — a 3% premium per extra chain, up to four, with a small penalty when the snapshot names no category.</li>
+    </ul>
+    <h3>Comparables — tokenized peers by category</h3>
+    <p class="sub" id="comparables-note">—</p>
+    <div class="table-wrap"><table class="compact">
+      <thead><tr><th scope="col">Category</th><th scope="col">Tokenized peers</th><th scope="col">Median mcap/TVL</th><th scope="col">Ratio used</th></tr></thead>
+      <tbody id="comparables"></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel live-note" id="live-note">
+    <h2>Live-token protocols are set aside</h2>
+    <p class="sub">These protocols already trade, so their market cap is a fact, not a model. Switch to the <b>Live token</b> tab above to see the top 24 by market cap. They never enter the pre-token ranking.</p>
+  </section>
+
+  <footer class="foot"><p>Implied value is this radar's own estimate from a sealed snapshot dated <span id="foot-date">—</span>. It is not a price, not a prediction that a token will launch, and not investment advice. Farm plans cost real money and real gas: check the protocol's own page before you act.</p></footer>
+</div>
+
+<dialog class="detail" id="detail" aria-labelledby="detail-title">
+  <div class="detail-head">
+    <div><span class="brand-name" id="detail-kicker">Rank —</span><h2 id="detail-title">—</h2><p class="sub" id="detail-sub">—</p></div>
+    <button class="close" type="button" id="detail-close">Close</button>
+  </div>
+  <section class="detail-section"><h3>Implied value — the model's own inputs</h3><div class="equation" id="detail-equation"></div><p class="sub" id="detail-check">—</p></section>
+  <section class="detail-section"><h3>Farm plan — what it costs, how long it takes</h3><ol class="steps" id="detail-steps"></ol></section>
+</dialog>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
